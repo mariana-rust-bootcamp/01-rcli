@@ -1,5 +1,6 @@
 use anyhow::Result;
 use rand::seq::{IndexedRandom, SliceRandom};
+use zxcvbn::zxcvbn;
 
 const UPPER: &[u8] = b"ABCDEFGHJKLMNPQRSTUVWXYZ";
 const LOWER: &[u8] = b"abcdefghjklmnpqrstuvwxyz";
@@ -43,7 +44,12 @@ pub fn process_genpass(
     password.shuffle(&mut rng);
 
     // String原生支持{} 不需要{:?}
-    println!("{}", String::from_utf8(password)?);
+    let password = String::from_utf8(password)?;
+    println!("{}", password);
+
+    let estimate = zxcvbn(&password, &[]);
+    // eprintln!在pipe时不显示, score()显示密码强度0-4(低-高)
+    eprintln!("Password strength: {}", estimate.score());
 
     Ok(())
 }
