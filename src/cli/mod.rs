@@ -1,14 +1,16 @@
 mod b64;
 mod csv;
 mod genpass;
+mod text;
 
 use self::{csv::CsvOpts, genpass::GenPassOpts};
 use clap::Parser;
-use std::path;
+use std::path::{self, Path, PathBuf};
 
 pub use self::{
     b64::{Base64Format, Base64SubCommand},
     csv::OutputFormat,
+    text::{TextSignFormat, TextSubCommand},
 };
 
 #[derive(Debug, Parser)]
@@ -26,9 +28,14 @@ pub enum SubCommand {
     GenPass(GenPassOpts),
     #[command(subcommand, about = "Base64 encode or decode")]
     Base64(Base64SubCommand),
+    #[command(
+        subcommand,
+        about = "generate a signature with symmetric/asymmetric encryption, or verify signature"
+    )]
+    Text(TextSubCommand),
 }
 
-fn verify_input_file(file: &str) -> Result<String, &'static str> {
+fn verify_file(file: &str) -> Result<String, &'static str> {
     // if input is "-" or file exists
     if file == "-" || path::Path::new(file).exists() {
         Ok(file.into()) // 切片 -> 含有所有权的String
@@ -37,15 +44,25 @@ fn verify_input_file(file: &str) -> Result<String, &'static str> {
     }
 }
 
+fn verify_path(path: &str) -> Result<PathBuf, &'static str> {
+    // if path exists and is a directory
+    let p = Path::new(path);
+    if p.exists() && p.is_dir() {
+        Ok(p.into())
+    } else {
+        Err("Path does not exist or is not a directory")
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn test_verify_input_file() {
-        assert_eq!(verify_input_file("-"), Ok("-".into()));
-        assert_eq!(verify_input_file("*"), Err("File does not exist"));
-        assert_eq!(verify_input_file("Cargo.toml"), Ok("Cargo.toml".into()));
-        assert_eq!(verify_input_file("not-exist"), Err("File does not exist"));
+    fn test_verify_file() {
+        assert_eq!(verify_file("-"), Ok("-".into()));
+        assert_eq!(verify_file("*"), Err("File does not exist"));
+        assert_eq!(verify_file("Cargo.toml"), Ok("Cargo.toml".into()));
+        assert_eq!(verify_file("not-exist"), Err("File does not exist"));
     }
 }

@@ -1,6 +1,5 @@
 use anyhow::Result;
-use rand::seq::{IndexedRandom, SliceRandom};
-use zxcvbn::zxcvbn;
+use rand::seq::SliceRandom;
 
 const UPPER: &[u8] = b"ABCDEFGHJKLMNPQRSTUVWXYZ";
 const LOWER: &[u8] = b"abcdefghjklmnpqrstuvwxyz";
@@ -13,8 +12,8 @@ pub fn process_genpass(
     lower: bool,
     number: bool,
     special: bool,
-) -> Result<()> {
-    let mut rng = rand::rng();
+) -> Result<String> {
+    let mut rng = rand::thread_rng();
     let mut password = Vec::new();
     let mut chars = Vec::new();
     // 这里用UPPER.choose获得的是&u8, 需要*UPPER才能获得u8
@@ -45,11 +44,6 @@ pub fn process_genpass(
 
     // String原生支持{} 不需要{:?}
     let password = String::from_utf8(password)?;
-    println!("{}", password);
 
-    let estimate = zxcvbn(&password, &[]);
-    // eprintln!在pipe时不显示, score()显示密码强度0-4(低-高)
-    eprintln!("Password strength: {}", estimate.score());
-
-    Ok(())
+    Ok(password)
 }
