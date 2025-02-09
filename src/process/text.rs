@@ -18,7 +18,7 @@ pub trait TextVerifier {
     fn verify(&self, reader: &mut dyn Read, sig: &[u8]) -> Result<bool>;
 }
 
-pub trait TextEncrypter {
+pub trait TextEncryptor {
     fn encrypt(&self, reader: &mut dyn Read) -> Result<Vec<u8>>;
 }
 
@@ -88,7 +88,7 @@ impl TextVerifier for Ed25519Verifier {
     }
 }
 
-impl TextEncrypter for Chacha20 {
+impl TextEncryptor for Chacha20 {
     fn encrypt(&self, reader: &mut dyn Read) -> Result<Vec<u8>> {
         // 明文->密文
         let mut buf = Vec::new();
@@ -236,7 +236,7 @@ pub fn process_text_encrypt(
     key: &[u8],
     format: TextSignFormat,
 ) -> Result<Vec<u8>> {
-    let encryptor: Box<dyn TextEncrypter> = match format {
+    let encryptor: Box<dyn TextEncryptor> = match format {
         TextSignFormat::Chacha20Poly1305 => Box::new(Chacha20::try_new(key)?),
         _ => return Err(anyhow::anyhow!("unsupported format")),
     };

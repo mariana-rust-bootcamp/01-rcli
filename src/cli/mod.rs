@@ -1,6 +1,7 @@
 mod b64;
 mod csv;
 mod genpass;
+mod http;
 mod text;
 
 use self::{csv::CsvOpts, genpass::GenPassOpts};
@@ -10,6 +11,7 @@ use std::path::{self, Path, PathBuf};
 pub use self::{
     b64::{Base64Format, Base64SubCommand},
     csv::OutputFormat,
+    http::HttpSubCommand,
     text::{TextSignFormat, TextSubCommand},
 };
 
@@ -33,6 +35,8 @@ pub enum SubCommand {
         about = "generate a signature with symmetric/asymmetric encryption, or verify signature"
     )]
     Text(TextSubCommand),
+    #[command(subcommand, about = "generate a http server")]
+    Http(HttpSubCommand),
 }
 
 fn verify_file(file: &str) -> Result<String, &'static str> {

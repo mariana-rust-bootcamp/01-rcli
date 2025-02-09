@@ -5,11 +5,15 @@ use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
 use clap::Parser;
 use rcli::{
     get_content, get_reader, process_csv, process_decode, process_encode, process_genpass,
-    process_text_decrypt, process_text_encrypt, process_text_key_generate, process_text_sign,
-    process_text_verify, Base64SubCommand, Opts, SubCommand, TextSubCommand,
+    process_http_serve, process_text_decrypt, process_text_encrypt, process_text_key_generate,
+    process_text_sign, process_text_verify, Base64SubCommand, HttpSubCommand, Opts, SubCommand,
+    TextSubCommand,
 };
 use zxcvbn::zxcvbn;
-fn main() -> Result<()> {
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    tracing_subscriber::fmt::init();
     let opts = Opts::parse();
     match opts.cmd {
         SubCommand::Csv(opts) => {
@@ -86,6 +90,11 @@ fn main() -> Result<()> {
                 let ciphertext = URL_SAFE_NO_PAD.decode(&decoded)?;
                 let plaintext = process_text_decrypt(&ciphertext, &key, opts.format)?;
                 println!("{}", String::from_utf8(plaintext)?);
+            }
+        },
+        SubCommand::Http(cmd) => match cmd {
+            HttpSubCommand::Serve(opts) => {
+                process_http_serve(opts.dir, opts.port).await?;
             }
         },
     }
