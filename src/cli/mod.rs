@@ -4,16 +4,10 @@ mod genpass;
 mod http;
 mod text;
 
-use self::{csv::CsvOpts, genpass::GenPassOpts};
 use clap::Parser;
 use std::path::{self, Path, PathBuf};
 
-pub use self::{
-    base64::{Base64Format, Base64SubCommand},
-    csv::OutputFormat,
-    http::HttpSubCommand,
-    text::{TextSignFormat, TextSubCommand},
-};
+pub use self::{base64::*, csv::*, genpass::*, http::*, text::*};
 
 #[derive(Debug, Parser)]
 #[command(name = "rcli", version, author, about, long_about = None)]

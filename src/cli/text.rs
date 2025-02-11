@@ -6,9 +6,11 @@ use crate::{
 use anyhow::Result;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
 use clap::Parser;
+use enum_dispatch::enum_dispatch;
 use std::{fs, path::PathBuf, str::FromStr};
 
 #[derive(Debug, Parser)]
+#[enum_dispatch(CmdExecutor)]
 pub enum TextSubCommand {
     // private key为非对称加密的私钥 session key为对称加密的密钥
     #[command(about = "sign a text with a private/session key and return a signature")]
@@ -156,14 +158,14 @@ impl CmdExecutor for TextDecryptOpts {
     }
 }
 
-impl CmdExecutor for TextSubCommand {
-    async fn execute(self) -> anyhow::Result<()> {
-        match self {
-            TextSubCommand::Sign(opts) => opts.execute().await,
-            TextSubCommand::Verify(opts) => opts.execute().await,
-            TextSubCommand::Generate(opts) => opts.execute().await,
-            TextSubCommand::Encrypt(opts) => opts.execute().await,
-            TextSubCommand::Decrypt(opts) => opts.execute().await,
-        }
-    }
-}
+// impl CmdExecutor for TextSubCommand {
+//     async fn execute(self) -> anyhow::Result<()> {
+//         match self {
+//             TextSubCommand::Sign(opts) => opts.execute().await,
+//             TextSubCommand::Verify(opts) => opts.execute().await,
+//             TextSubCommand::Generate(opts) => opts.execute().await,
+//             TextSubCommand::Encrypt(opts) => opts.execute().await,
+//             TextSubCommand::Decrypt(opts) => opts.execute().await,
+//         }
+//     }
+// }
