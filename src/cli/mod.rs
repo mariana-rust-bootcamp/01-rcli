@@ -1,4 +1,4 @@
-mod b64;
+mod base64;
 mod csv;
 mod genpass;
 mod http;
@@ -9,7 +9,7 @@ use clap::Parser;
 use std::path::{self, Path, PathBuf};
 
 pub use self::{
-    b64::{Base64Format, Base64SubCommand},
+    base64::{Base64Format, Base64SubCommand},
     csv::OutputFormat,
     http::HttpSubCommand,
     text::{TextSignFormat, TextSubCommand},
