@@ -2,12 +2,13 @@ mod base64;
 mod csv;
 mod genpass;
 mod http;
+mod jwt;
 mod text;
 
 use clap::Parser;
 use std::path::{self, Path, PathBuf};
 
-pub use self::{base64::*, csv::*, genpass::*, http::*, text::*};
+pub use self::{base64::*, csv::*, genpass::*, http::*, jwt::*, text::*};
 
 #[derive(Debug, Parser)]
 #[command(name = "rcli", version, author, about, long_about = None)]
@@ -31,6 +32,11 @@ pub enum SubCommand {
     Text(TextSubCommand),
     #[command(subcommand, about = "generate a http server")]
     Http(HttpSubCommand),
+    #[command(
+        subcommand,
+        about = "generate or verify a jsonwebtoken with default algorithm"
+    )]
+    Jwt(JwtSubCommand),
 }
 
 fn verify_file(file: &str) -> Result<String, &'static str> {

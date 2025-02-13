@@ -12,5 +12,6 @@ async fn main() -> Result<()> {
         SubCommand::Base64(cmd) => cmd.execute().await,
         SubCommand::Text(cmd) => cmd.execute().await,
         SubCommand::Http(cmd) => cmd.execute().await,
+        SubCommand::Jwt(cmd) => cmd.execute().await,
     }
 }
